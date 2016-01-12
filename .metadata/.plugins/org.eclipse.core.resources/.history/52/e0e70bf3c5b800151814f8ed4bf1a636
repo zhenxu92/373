@@ -1,0 +1,104 @@
+// importing GUI libraries
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+
+
+// importing library to use TimeUnit class
+import java.util.concurrent.TimeUnit;
+
+/*
+ * This program tests human's sensibility in
+ * recognizing elapsed time.
+ * author: Zhen Xu
+ */
+
+
+public  class TimedResponseGame extends JFrame
+{
+	private long startTime, elapsedTime;
+	
+	private JLabel instructionLabel, responseLabel;
+	private JButton startButton, stopButton;
+
+	private static final int HEIGHT = 400;
+	private static final int WIDTH = 700;
+
+	private startButtonHandler startButtonHandler;
+	private stopButtonHandler stopButtonHandler;
+
+	public TimedResponseGame()
+	{	
+		
+		instructionLabel = new JLabel("Please Click Start, after 3 seconds, Click Stop.");
+		responseLabel = new JLabel();
+
+		//This section specifies the handlers for the buttons and adds an ActionListener.
+		startButton = new JButton("Start! ");
+		startButtonHandler = new startButtonHandler();
+		startButton.addActionListener(startButtonHandler);
+		startButton.setBackground(Color.GREEN);
+		stopButton = new JButton("Stop! ");
+		stopButtonHandler = new stopButtonHandler();
+		stopButton.addActionListener(stopButtonHandler);
+		stopButton.setBackground(Color.RED);
+		
+		setTitle("Timed Response Game");
+		Container pane = getContentPane();
+		pane.setLayout(new GridLayout(2, 2));
+
+		//Grid layout requires that you add components to the content pane in the order they should appear
+		pane.add(instructionLabel);
+		pane.add(responseLabel);
+		pane.add(startButton);
+		pane.add(stopButton);
+
+		setSize(WIDTH, HEIGHT);
+		setVisible(true);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+	}
+
+	private class startButtonHandler implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			startTime = System.nanoTime();
+		}
+	}
+
+	public class stopButtonHandler implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			elapsedTime = System.nanoTime() - startTime;
+			long msTimeElapsed = TimeUnit.NANOSECONDS.toMillis(elapsedTime);
+			long elapsedMilliseconds = msTimeElapsed - 3000;
+			long millisecondsOff = Math.abs(elapsedMilliseconds);
+			String response;
+			if (millisecondsOff <= 100)
+				response = "Nice! You were only " + Long.toString(millisecondsOff) + "milliseconds";
+			else 
+				response = "You were " + Long.toString(millisecondsOff);
+			if (elapsedMilliseconds <0)
+				response += "early";
+			else
+				response += "late";
+			responseLabel.setText(response);
+		}
+	}
+
+	public static void main(String[] args)
+	{
+		TimedResponseGame rectObj = new TimedResponseGame();
+	}
+
+}
